@@ -1,0 +1,153 @@
+-- 查询出部门编号为30的所有员工
+SELECT *
+FROM t_employees
+WHERE deptno=30
+
+-- 所有经理的姓名、编号、和部门编号
+SELECT ename , empno , deptno
+FROM t_employees
+WHERE job='经理'
+
+-- mysql,oracle,sql server(关系型数据库，nosql)
+-- sql99标准
+-- 增，删，改，查（复杂，单表查询，链表查询，嵌套查询，子查询，自表查询）
+-- 增
+CREATE DATABASE  lt CHARACTER SET utf8;
+
+CREATE TABLE person(
+	username VARCHAR(20),
+	age INT,
+	high DOUBLE(5,2),
+	salary  DOUBLE(8,2)
+);
+-- 插入数据
+INSERT INTO person VALUE("刘备",56,1.78,5000.36);
+
+INSERT INTO person VALUE
+("张飞",46,1.68,3500.36),
+("关羽",56,1.78,4500.36),
+("汉献帝",76,1.78,1000.36),
+("孙权",36,1.78,1800.36),
+("曹操",26,1.48,2600.36);
+
+-- 删除： delete 
+DELETE FROM person WHERE age > 70 AND age < 30;
+
+-- 改： update
+UPDATE person SET salary  = salary + 1000 WHERE age > 50
+
+-- 修改曹操的奖金
+UPDATE t_employees SET comm=comm+5000 WHERE ename='曹操'
+
+-- 找出奖金高于工资的员工
+SELECT *
+FROM t_employees
+WHERE comm>sal
+
+-- 找出奖金高于工资60%的员工
+SELECT *
+FROM t_employees
+WHERE comm>sal*(1+0.6)
+
+-- 找出部门编号为10中所有经理，和部门编号为20中所有分析员的详细资料
+SELECT *
+FROM t_employees
+WHERE job='经理' AND deptno=10 OR job='分析员' AND deptno=20 
+
+
+-- 找出部门编号为10中所有经理，部门编号为20中所有分析员，还有即不是经理又不是武装上将但其工资大或等于3000的所有员工详细资料
+SELECT *
+FROM t_employees
+WHERE job='经理' AND deptno=10 OR job='分析员' AND deptno=20 OR job!='经理' AND job!='武装上将'	AND sal>=3000
+
+-- 无奖金或者奖金低于一千的员工
+SELECT *
+FROM t_employees
+WHERE comm IS NULL OR comm<1000
+
+-- 查询名字由三个字组成的员工
+SELECT *
+FROM t_employees
+WHERE ename LIKE "___"
+
+-- 查询2000年以及以后入职的员工
+SELECT *
+FROM t_employees
+WHERE hiredate>='2001-01-01'
+
+
+-- 查询所有员工的详细信息，用编号升序排序
+SELECT *
+FROM t_employees
+ORDER BY empno ASC
+
+-- 查询所有员工的详细信息，用工资降序排序,如果工资相同使用入职日期升序排序
+SELECT *
+FROM t_employees
+ORDER BY sal DESC,hiredate ASC
+
+-- 查询每个部门的平均工资
+SELECT  dname ,AVG(sal)
+FROM t_employees t1
+JOIN t_dept t2
+ON  t1.deptno=t2.deptno
+GROUP BY t2.deptno
+
+-- 查询平均工资最低的部门平均工资
+
+SELECT  dname,MIN(ag)
+FROM(
+	SELECT  dname ,AVG(sal)ag
+	FROM t_employees t1
+	JOIN t_dept t2
+	ON  t1.deptno=t2.deptno
+	GROUP BY t2.deptno
+)ag_dep;
+
+-- 查询平均工资最低的部门编号
+SELECT  deptno
+FROM t_employees
+GROUP BY deptno
+HAVING AVG(sal)=(
+SELECT  MIN(ag)
+FROM(
+	SELECT  dname ,AVG(sal)ag
+	FROM t_employees t1
+	JOIN t_dept t2
+	ON  t1.deptno=t2.deptno
+	GROUP BY t2.deptno
+)ag_dep
+);
+
+-- 查询每个部门的雇员数量
+SELECT dname,COUNT(empno)
+FROM t_employees,t_dept
+WHERE t_employees.`deptno`=t_dept.`deptno`
+GROUP BY t_employees.`deptno`
+
+-- 查询每种工作的最高工资、最低工资、人数
+SELECT job,MAX(sal),MIN(sal),COUNT(empno)
+FROM t_employees,t_dept
+WHERE t_employees.`deptno`=t_dept.`deptno`
+GROUP BY t_employees.`job`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
